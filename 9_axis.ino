@@ -27,7 +27,7 @@ uint8_t read_register(uint8_t addr, uint8_t reg) {
   Wire.beginTransmission(addr);
   Wire.write(reg);
   Wire.endTransmission(false);
-  Wire.requestFrom(addr, 1);
+  Wire.requestFrom((int)addr, 1);
 
   if(!Wire.available()) return -1;
   return (Wire.read());
@@ -57,7 +57,7 @@ void setup() {
   write_register(MPU9250_ADDR, 0x6B, 0x00);
   write_register(MPU9250_ADDR, 0x37, 0x02);
   write_register(MPU9250_COMPASS_ADDR, 0x0A, 0x12);
-//  Serial.begin(9600);   // シリアルモニタ用
+  Serial.begin(9600);   // シリアルモニタ用
   myservo.attach(6,955,2000); /*(pin番号,最小パルス幅,最大パルス幅*/
   delay(3000);
 }
@@ -108,7 +108,7 @@ void loop() {
   int mag_z_bottom = read_register(MPU9250_COMPASS_ADDR, 0x07);
   int mag_z_top = read_register(MPU9250_COMPASS_ADDR, 0x08);
   int16_t mag_z = (mag_z_top << 8) | mag_z_bottom;
-  read_register_com(0x09);
+  read_register(MPU9250_COMPASS_ADDR, 0x09);
 //  Serial.print("x_axis = ");
 //  Serial.println(acc_x*0.061);
 //  Serial.print("y_axis = ");
@@ -128,25 +128,26 @@ void loop() {
 //  Serial.print("Gyro z = ") ;
 //  Serial.println(gyro_z*0.00763) ;
 
-  Serial.print(i);
-  Serial.print("  ");
-  Serial.print(mag_x);
-  Serial.print("  ");
-  Serial.print(mag_y);
-  Serial.print("  ");
-  Serial.println(mag_z);
-  Serial.print(mag_x_bottom, BIN);
-  Serial.print("  ");
-  Serial.println(mag_x_top, BIN);
+  //Serial.print(i);
+  //Serial.print("  ");
+   Serial.print("X = ");
+   Serial.print(mag_x);
+   Serial.print(", Y = ");
+   Serial.print(mag_y);
+   Serial.print(", Z = ");
+   Serial.println(mag_z);
+   //Serial.print(mag_x_bottom, BIN);
+   //Serial.print("  ");
+   //Serial.println(mag_x_top, BIN);
 
-  pulseMin = 955; /* パルス幅最小値を360で割る*/
-  pulseMax = 2000;  /* パルス幅最大値を360で割る*/
+   pulseMin = 955;  /* パルス幅最小値を360で割る*/
+   pulseMax = 2000; /* パルス幅最大値を360で割る*/
 
-  pulse_deg = (pulseMax-pulseMin)/360;  /*1度あたり何パルス幅増えるか*/
+   pulse_deg = (pulseMax - pulseMin) / 360; /*1度あたり何パルス幅増えるか*/
 
-  deg = 0;  /*ここに何度回すか,deg表記で代入*/
-  pulse = pulse_deg*deg + pulseMin;  /*degは何パルス幅か*/
+   deg = 0;                            /*ここに何度回すか,deg表記で代入*/
+   pulse = pulse_deg * deg + pulseMin; /*degは何パルス幅か*/
 
-  myservo.writeMicroseconds(pulse);
-  delay(2000);
+   myservo.writeMicroseconds(pulse);
+   delay(2000);
 }
