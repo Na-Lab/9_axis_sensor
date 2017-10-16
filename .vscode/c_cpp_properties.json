@@ -34,7 +34,8 @@
                 "/usr/include/x86_64-linux-gnu",
                 "${workspaceRoot}",
                 "/home/ibuki/arduino-1.8.5/hardware/arduino/avr/cores/arduino",
-                "/home/ibuki/arduino-1.8.5/hardware/arduino/avr"
+                "/home/ibuki/arduino-1.8.5/hardware/arduino/avr",
+                "/home/ibuki/arduino-1.8.5/libraries"
             ],
             "defines": [],
             "intelliSenseMode": "clang-x64",
@@ -47,7 +48,8 @@
                     "/usr/include",
                     "/usr/include/x86_64-linux-gnu",
                     "${workspaceRoot}",
-                    "/home/ibuki/arduino-1.8.5/hardware/arduino/avr"
+                    "/home/ibuki/arduino-1.8.5/hardware/arduino/avr",
+                    "/home/ibuki/arduino-1.8.5/libraries"
                 ],
                 "limitSymbolsToIncludedHeaders": false,
                 "databaseFilename": ""

@@ -14,39 +14,25 @@ Servo myservo;
 float pulseMin,pulseMax,pulse_deg,pulse,deg;
 
 // 指定レジスタデータ書き込み関数
-void write_register(uint8_t reg, uint8_t data){
-  Wire.beginTransmission(MPU9250_ADDR);
+void write_register(uint8_t addr, uint8_t reg, uint8_t data){
+  Wire.beginTransmission(addr);
   Wire.write(reg);
   Wire.write(data);
   Wire.endTransmission();
 }
-void write_register_com(uint8_t reg, uint8_t data){
-  Wire.beginTransmission(MPU9250_COMPASS_ADDR);
-  Wire.write(reg);
-  Wire.write(data);
-  Wire.endTransmission();
-}
+
 
 // 指定レジスタデータ読み取り関数
-uint8_t read_register(uint8_t reg) {
-  Wire.beginTransmission(MPU9250_ADDR);
+uint8_t read_register(uint8_t addr, uint8_t reg) {
+  Wire.beginTransmission(addr);
   Wire.write(reg);
   Wire.endTransmission(false);
-  Wire.requestFrom(MPU9250_ADDR, 1);
+  Wire.requestFrom(addr, 1);
 
   if(!Wire.available()) return -1;
   return (Wire.read());
 }
 
-uint8_t read_register_com(uint8_t reg) {
-  Wire.beginTransmission(MPU9250_COMPASS_ADDR);
-  Wire.write(reg);
-  Wire.endTransmission(false);
-  Wire.requestFrom(MPU9250_COMPASS_ADDR, 1);
-
-  if(!Wire.available()) return -1;
-  return (Wire.read());
-}
 
 // [未完]指定レジスタデータ読み取り関数（16ビット版）
 int16_t read16_register(uint8_t reg) {
@@ -61,63 +47,66 @@ int16_t read16_register(uint8_t reg) {
   if(!Wire.available()) return 0;
   return (Wire.read());
 }
+
+
 void setup() {
    //コンパス起動に必要な処理
   Wire.begin();
   Serial.begin(9600);
   
-  write_register(0x6B, 0x00);
-  write_register(0x37, 0x02);
-  write_register_com(0x0A, 0x12);
+  write_register(MPU9250_ADDR, 0x6B, 0x00);
+  write_register(MPU9250_ADDR, 0x37, 0x02);
+  write_register(MPU9250_COMPASS_ADDR, 0x0A, 0x12);
 //  Serial.begin(9600);   // シリアルモニタ用
   myservo.attach(6,955,2000); /*(pin番号,最小パルス幅,最大パルス幅*/
   delay(3000);
 }
-int i = 0;
+
+
 void loop() {
-  //int c = read_register(WHO_AM_I);
-//加速度センサ
-  
+  int i = 0;
+  //int c = read_register(MPU9250_ADDR, WHO_AM_I);
+  //加速度センサ
 
-//  int acc_x_top = read_register(0x3b);
-//  int acc_x_bottom = read_register(0x3c);
-//  int16_t acc_x = (acc_x_top << 8) | acc_x_bottom;
-//  
-//  int acc_y_top = read_register(0x3d);
-//  int acc_y_bottom = read_register(0x3e);
-//  int16_t acc_y = (acc_y_top << 8) | acc_y_bottom;
-//  
-//  int acc_z_top = read_register(0x3f);
-//  int acc_z_bottom = read_register(0x40);
-//  int16_t acc_z = (acc_z_top << 8) | acc_z_bottom;
-//
-////こっからジャイロ
-//  int gyro_x_top = read_register(0x43);
-//  int gyro_x_bottom = read_register(0x44);
-//  int16_t gyro_x = (gyro_x_top << 8) | gyro_x_bottom;
-//
-//  int gyro_y_top = read_register(0x45);
-//  int gyro_y_bottom = read_register(0x46);
-//  int16_t gyro_y = (gyro_y_top << 8) | gyro_y_bottom;
-//
-//  int gyro_z_top = read_register(0x47);
-//  int gyro_z_bottom = read_register(0x48);
-//  int16_t gyro_z = (gyro_z_top << 8) | gyro_z_bottom;
+  //  int acc_x_top = read_register(MPU9250_ADDR, 0x3b);
+  //  int acc_x_bottom = read_register(MPU9250_ADDR, 0x3c);
+  //  int16_t acc_x = (acc_x_top << 8) | acc_x_bottom;
+  //
+  //  int acc_y_top = read_register(MPU9250_ADDR, 0x3d);
+  //  int acc_y_bottom = read_register(MPU9250_ADDR, 0x3e);
+  //  int16_t acc_y = (acc_y_top << 8) | acc_y_bottom;
+  //
+  //  int acc_z_top = read_register(MPU9250_ADDR, 0x3f);
+  //  int acc_z_bottom = read_register(MPU9250_ADDR, 0x40);
+  //  int16_t acc_z = (acc_z_top << 8) | acc_z_bottom;
+  //
+  ////こっからジャイロ
+  //  int gyro_x_top = read_register(MPU9250_ADDR, 0x43);
+  //  int gyro_x_bottom = read_register(MPU9250_ADDR, 0x44);
+  //  int16_t gyro_x = (gyro_x_top << 8) | gyro_x_bottom;
+  //
+  //  int gyro_y_top = read_register(MPU9250_ADDR, 0x45);
+  //  int gyro_y_bottom = read_register(MPU9250_ADDR, 0x46);
+  //  int16_t gyro_y = (gyro_y_top << 8) | gyro_y_bottom;
+  //
+  //  int gyro_z_top = read_register(MPU9250_ADDR, 0x47);
+  //  int gyro_z_bottom = read_register(MPU9250_ADDR, 0x48);
+  //  int16_t gyro_z = (gyro_z_top << 8) | gyro_z_bottom;
 
- //ここから電磁気
- //下位8bitが先に並んでいることに注意すること
+  //ここから電磁気
+  //下位8bitが先に並んでいることに注意すること
 
  
-  int mag_x_bottom = read_register_com(0x03);
-  int mag_x_top = read_register_com(0x04);
+  int mag_x_bottom = read_register(MPU9250_COMPASS_ADDR, 0x03);
+  int mag_x_top = read_register(MPU9250_COMPASS_ADDR, 0x04);
   int16_t mag_x = (mag_x_top << 8) | mag_x_bottom;
  
-  int mag_y_bottom = read_register_com(0x05);
-  int mag_y_top = read_register_com(0X06);
+  int mag_y_bottom = read_register(MPU9250_COMPASS_ADDR, 0x05);
+  int mag_y_top = read_register(MPU9250_COMPASS_ADDR, 0X06);
   int16_t mag_y = (mag_y_top << 8) | mag_y_bottom;
  
-  int mag_z_bottom = read_register_com(0x07);
-  int mag_z_top = read_register_com(0x08);
+  int mag_z_bottom = read_register(MPU9250_COMPASS_ADDR, 0x07);
+  int mag_z_top = read_register(MPU9250_COMPASS_ADDR, 0x08);
   int16_t mag_z = (mag_z_top << 8) | mag_z_bottom;
   read_register_com(0x09);
 //  Serial.print("x_axis = ");
