@@ -13,6 +13,27 @@ Servo myservo;
 
 float pulseMin,pulseMax,pulse_deg,pulse,deg;
 
+// 加速度センサの値
+typedef struct acc{
+  int x;
+  int y;
+  int z;
+} acc_t;
+
+// ジャイロセンサの値
+typedef struct gyro{
+  int x;
+  int y;
+  int z;
+} gyro_t;
+
+// 地磁気センサの値
+typedef struct compass{
+  int x;
+  int y;
+  int z;
+} compass_t;
+
 // 指定レジスタデータ書き込み関数
 void write_register(uint8_t addr, uint8_t reg, uint8_t data){
   Wire.beginTransmission(addr);
@@ -48,7 +69,27 @@ int16_t read16_register(uint8_t reg) {
   return (Wire.read());
 }
 
+// コンパスデータ取得関数
+// メモ：これだけリトルエンディアン
+compass_t read_compass(){
+  compass_t com;
+  int top, bottom;
 
+  bottom = read_register(MPU9250_COMPASS_ADDR, 0x03);
+  top = read_register(MPU9250_COMPASS_ADDR, 0x04);
+  com.x = (top << 8) | bottom;
+
+  bottom = read_register(MPU9250_COMPASS_ADDR, 0x05);
+  top = read_register(MPU9250_COMPASS_ADDR, 0x06);
+  com.y = (top << 8) | bottom;
+
+  bottom = read_register(MPU9250_COMPASS_ADDR, 0x07);
+  top = read_register(MPU9250_COMPASS_ADDR, 0x08);
+  com.z = (top << 8) | bottom;
+
+  read_register(MPU9250_COMPASS_ADDR, 0x09);
+  return com;
+}
 void setup() {
    //コンパス起動に必要な処理
   Wire.begin();
@@ -64,7 +105,7 @@ void setup() {
 
 
 void loop() {
-  int i = 0;
+  compass_t com;
   //int c = read_register(MPU9250_ADDR, WHO_AM_I);
   //加速度センサ
 
@@ -93,52 +134,33 @@ void loop() {
   //  int gyro_z_bottom = read_register(MPU9250_ADDR, 0x48);
   //  int16_t gyro_z = (gyro_z_top << 8) | gyro_z_bottom;
 
-  //ここから電磁気
-  //下位8bitが先に並んでいることに注意すること
+  while(true) {
+    com = read_compass();
+    Serial.print("X = ");
+    Serial.print(com.x);
+    Serial.print(", Y = ");
+    Serial.print(com.y);
+    Serial.print(", Z = ");
+    Serial.println(com.z);
+    delay(2000);
+  }
+  //  Serial.print("x_axis = ");
+  //  Serial.println(acc_x*0.061);
+  //  Serial.print("y_axis = ");
+  //  Serial.println(acc_y*0.061);
+  //  Serial.print("z_axis = ");
+  //  Serial.println(acc_z*0.061);
 
- 
-  int mag_x_bottom = read_register(MPU9250_COMPASS_ADDR, 0x03);
-  int mag_x_top = read_register(MPU9250_COMPASS_ADDR, 0x04);
-  int16_t mag_x = (mag_x_top << 8) | mag_x_bottom;
- 
-  int mag_y_bottom = read_register(MPU9250_COMPASS_ADDR, 0x05);
-  int mag_y_top = read_register(MPU9250_COMPASS_ADDR, 0X06);
-  int16_t mag_y = (mag_y_top << 8) | mag_y_bottom;
- 
-  int mag_z_bottom = read_register(MPU9250_COMPASS_ADDR, 0x07);
-  int mag_z_top = read_register(MPU9250_COMPASS_ADDR, 0x08);
-  int16_t mag_z = (mag_z_top << 8) | mag_z_bottom;
-  read_register(MPU9250_COMPASS_ADDR, 0x09);
-//  Serial.print("x_axis = ");
-//  Serial.println(acc_x*0.061);
-//  Serial.print("y_axis = ");
-//  Serial.println(acc_y*0.061);
-//  Serial.print("z_axis = ");
-//  Serial.println(acc_z*0.061);
-//
-   i= i+1;
-//  Serial.print(i);
-//  Serial.print(" ");
-//  Serial.print("Gyro x = ") ;
-//  Serial.print(gyro_x*0.00763) ;
-//  Serial.print(" ");
-//  Serial.print("Gyro y = ") ;
-//  Serial.print(gyro_y*0.00763) ;
-//  Serial.print(" ");
-//  Serial.print("Gyro z = ") ;
-//  Serial.println(gyro_z*0.00763) ;
-
-  //Serial.print(i);
-  //Serial.print("  ");
-   Serial.print("X = ");
-   Serial.print(mag_x);
-   Serial.print(", Y = ");
-   Serial.print(mag_y);
-   Serial.print(", Z = ");
-   Serial.println(mag_z);
-   //Serial.print(mag_x_bottom, BIN);
-   //Serial.print("  ");
-   //Serial.println(mag_x_top, BIN);
+  //  Serial.print(i);
+  //  Serial.print(" ");
+  //  Serial.print("Gyro x = ") ;
+  //  Serial.print(gyro_x*0.00763) ;
+  //  Serial.print(" ");
+  //  Serial.print("Gyro y = ") ;
+  //  Serial.print(gyro_y*0.00763) ;
+  //  Serial.print(" ");
+  //  Serial.print("Gyro z = ") ;
+  //  Serial.println(gyro_z*0.00763) ;
 
    pulseMin = 955;  /* パルス幅最小値を360で割る*/
    pulseMax = 2000; /* パルス幅最大値を360で割る*/
