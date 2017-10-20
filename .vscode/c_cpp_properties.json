@@ -35,7 +35,9 @@
                 "${workspaceRoot}",
                 "/home/ibuki/arduino-1.8.5/hardware/arduino/avr/cores/arduino",
                 "/home/ibuki/arduino-1.8.5/hardware/arduino/avr",
-                "/home/ibuki/arduino-1.8.5/libraries"
+                "/home/ibuki/arduino-1.8.5/libraries",
+                "/home/ibuki/arduino-1.8.5/hardware/arduino/avr/libraries/Wire/src",
+                "/home/ibuki/arduino-1.8.5/libraries/Servo/src"
             ],
             "defines": [],
             "intelliSenseMode": "clang-x64",
