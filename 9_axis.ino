@@ -1,7 +1,6 @@
 // 9軸センサ制御プログラム
 
 #include <Wire.h>
-#include<Servo.h>
 
 // スレーブアドレス
 #define MPU9250_ADDR          0x68    // 加速度、ジャイロ
@@ -13,10 +12,6 @@
 // 定数
 #define REVISE_ACC            0.061   // 加速度補正
 #define REVISE_GYRO           0.00763 // ジャイロ補正
-
-Servo myservo;
-
-float pulseMin,pulseMax,pulse_deg,pulse,deg;
 
 // 加速度センサの値
 typedef struct acc{
@@ -124,14 +119,10 @@ compass_t read_compass(){
 void setup() {
    //コンパス起動に必要な処理
   Wire.begin();
-  Serial.begin(9600);
-  
   write_register(MPU9250_ADDR, 0x6B, 0x00);
   write_register(MPU9250_ADDR, 0x37, 0x02);
   write_register(MPU9250_COMPASS_ADDR, 0x0A, 0x12);
   Serial.begin(9600);   // シリアルモニタ用
-  myservo.attach(6,955,2000); /*(pin番号,最小パルス幅,最大パルス幅*/
-  delay(3000);
 }
 
 
@@ -173,15 +164,4 @@ void loop() {
     Serial.println("");
     delay(2000);
   }
-
-   pulseMin = 955;  /* パルス幅最小値を360で割る*/
-   pulseMax = 2000; /* パルス幅最大値を360で割る*/
-
-   pulse_deg = (pulseMax - pulseMin) / 360; /*1度あたり何パルス幅増えるか*/
-
-   deg = 0;                            /*ここに何度回すか,deg表記で代入*/
-   pulse = pulse_deg * deg + pulseMin; /*degは何パルス幅か*/
-
-   myservo.writeMicroseconds(pulse);
-   delay(2000);
 }
