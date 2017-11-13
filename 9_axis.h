@@ -30,6 +30,7 @@ struct rawMagneticFluxDensity {
 class NineAxis {
  public:
   NineAxis();
+
   void begin();
   /**
    * @brief センサ情報更新関数
@@ -37,7 +38,6 @@ class NineAxis {
    * MPU-9250から加速度、角加速度、磁束密度を受信して緯度経度を取得します。
    */
   void update();
-
   int getRawAccelerationX();
   int getRawAccelerationY();
   int getRawAccelerationZ();

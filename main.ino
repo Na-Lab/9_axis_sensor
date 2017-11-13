@@ -35,9 +35,9 @@ void loop() {
   Serial.print("X = ");
   Serial.print(nineAxisSensor.getRawMagneticFluxDensityX());
   Serial.print(", Y = ");
-  Serial.print(nineAxisSensor.getRawMagneticFluxDensityX());
+  Serial.print(nineAxisSensor.getRawMagneticFluxDensityY());
   Serial.print(", Z = ");
-  Serial.print(nineAxisSensor.getRawMagneticFluxDensityX());
+  Serial.print(nineAxisSensor.getRawMagneticFluxDensityZ());
   Serial.println("");
   Serial.println("==============================");
   Serial.println("");
