@@ -3,24 +3,24 @@
 #include <Arduino.h>
 
 /** 加速度センサデータ **/
-struct rawAcceleration {
-  int x; /**< 加速度X軸方向 */
-  int y; /**< 加速度Y軸方向 */
-  int z; /**< 加速度Z軸方向 */
+struct acceleration {
+  double x; /**< 加速度X軸方向 */
+  double y; /**< 加速度Y軸方向 */
+  double z; /**< 加速度Z軸方向 */
 };
 
 /** 角加速度センサデータ **/
-struct rawAngularAcceleration {
-  int x; /**< 角加速度X軸方向 */
-  int y; /**< 角加速度Y軸方向 */
-  int z; /**< 角加速度Z軸方向 */
+struct angularAcceleration {
+  double x; /**< 角加速度X軸方向 */
+  double y; /**< 角加速度Y軸方向 */
+  double z; /**< 角加速度Z軸方向 */
 };
 
 /** 磁束密度センサデータ **/
-struct rawMagneticFluxDensity {
-  int x; /**< 磁束密度X軸方向 */
-  int y; /**< 磁束密度Y軸方向 */
-  int z; /**< 磁束密度Z軸方向 */
+struct magneticFluxDensity {
+  double x; /**< 磁束密度X軸方向 */
+  double y; /**< 磁束密度Y軸方向 */
+  double z; /**< 磁束密度Z軸方向 */
 };
 
 /**
@@ -37,23 +37,24 @@ class NineAxis {
    *
    * MPU-9250から加速度、角加速度、磁束密度を受信して緯度経度を取得します。
    */
-  void update();
-  int getRawAccelerationX();
-  int getRawAccelerationY();
-  int getRawAccelerationZ();
-  int getRawAngularAccelerationX();
-  int getRawAngularAccelerationY();
-  int getRawAngularAccelerationZ();
-  int getRawMagneticFluxDensityX();
-  int getRawMagneticFluxDensityY();
-  int getRawMagneticFluxDensityZ();
+  void   update();
+  
+  double getRawAccelerationX();
+  double getRawAccelerationY();
+  double getRawAccelerationZ();
+  double getRawAngularAccelerationX();
+  double getRawAngularAccelerationY();
+  double getRawAngularAccelerationZ();
+  double getRawMagneticFluxDensityX();
+  double getRawMagneticFluxDensityY();
+  double getRawMagneticFluxDensityZ();
 
  private:
-  const byte MPU9250Address;
-  const byte MPU9250CompassAddress;
-  struct rawAcceleration        acceleration;
-  struct rawAngularAcceleration angularAcceleration;
-  struct rawMagneticFluxDensity magneticFluxDensity;
+  const byte MPU9250Address; /**< MPU9250のデバイスアドレス */
+  const byte MPU9250CompassAddress; /**< 地磁気センサのデバイスアドレス */
+  struct acceleration        rawAcceleration;        /**< 加速度[mG] */
+  struct angularAcceleration rawAngularAcceleration; /**< 角加速度[deg/s] */
+  struct magneticFluxDensity rawMagneticFluxDensity; /**< 磁束密度[microT] */
 
   /**
    * @brief レジスタデータ書き込み関数
@@ -79,25 +80,22 @@ class NineAxis {
    * @brief 加速度読み取り関数
    *
    * MPU-9250から加速度を読み取ります。
-   * @param[out] acceleration    加速度データ格納構造体
    */
-  void readAcceleration(struct rawAcceleration *acceleration);
+  void readAcceleration();
 
   /**
    * @brief 角加速度読み取り関数
    *
    * MPU-9250から角加速度を読み取ります。
-   * @param[out] angular    角加速度データ格納構造体
    */
-  void readAngularAcceleration(struct rawAngularAcceleration *angular);
+  void readAngularAcceleration();
 
   /**
    * @brief 磁束密度読み取り関数
    *
    * MPU-9250から磁束密度を読み取ります。
-   * @param[out] Magnetic    磁束密度データ格納構造体
    */
-  void readMagneticFluxDensity(struct rawMagneticFluxDensity *magnetic);
+  void readMagneticFluxDensity();
 };
 
 #endif

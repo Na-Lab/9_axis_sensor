@@ -1,6 +1,6 @@
 // 9軸センサ制御プログラム
 #include <Arduino.h>
-#include <Wire.h>
+
 #include "9_axis.h"
 
 NineAxis nineAxisSensor;
