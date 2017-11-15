@@ -83,25 +83,32 @@ void NineAxis::readAngularAcceleration() {
 
 // 注意：これのみリトルエンディアンである
 void NineAxis::readMagneticFluxDensity() {
-  const double unitConversion = 0.15;
-  const double offsetX        = -39.588;
-  const double offsetY        = -9.9535;
-  int          top, bottom;
+  const double               unitConversion = 0.15; /**< 単位換算 */
+  const double               offsetX     = -39.588; /**< X軸オフセット */
+  const double               offsetY     = -9.9535; /**< Y軸オフセット */
+  struct magneticFluxDensity avgMagnetic = {0.0};
+  int                        top, bottom;
 
-  bottom                   = readRegisterData(MPU9250CompassAddress, 0x03);
-  top                      = readRegisterData(MPU9250CompassAddress, 0x04);
-  rawMagneticFluxDensity.x = ((top << 8) | bottom) * unitConversion + offsetX;
+  for (int i = 0; i < 200; i++) {
+    bottom = readRegisterData(MPU9250CompassAddress, 0x03);
+    top    = readRegisterData(MPU9250CompassAddress, 0x04);
+    avgMagnetic.x += ((top << 8) | bottom) * unitConversion + offsetX;
 
-  bottom                   = readRegisterData(MPU9250CompassAddress, 0x05);
-  top                      = readRegisterData(MPU9250CompassAddress, 0x06);
-  rawMagneticFluxDensity.y = ((top << 8) | bottom) * unitConversion + offsetY;
+    bottom = readRegisterData(MPU9250CompassAddress, 0x05);
+    top    = readRegisterData(MPU9250CompassAddress, 0x06);
+    avgMagnetic.y += ((top << 8) | bottom) * unitConversion + offsetY;
 
-  bottom                   = readRegisterData(MPU9250CompassAddress, 0x07);
-  top                      = readRegisterData(MPU9250CompassAddress, 0x08);
-  rawMagneticFluxDensity.z = ((top << 8) | bottom) * unitConversion;
+    bottom = readRegisterData(MPU9250CompassAddress, 0x07);
+    top    = readRegisterData(MPU9250CompassAddress, 0x08);
+    avgMagnetic.z += ((top << 8) | bottom) * unitConversion;
 
-  // データをリフレッシュするには0x09を読む必要がある
-  readRegisterData(MPU9250CompassAddress, 0x09);
+    // データをリフレッシュするには0x09を読む必要がある
+    readRegisterData(MPU9250CompassAddress, 0x09);
+  }
+
+  rawMagneticFluxDensity.x = avgMagnetic.x / 200.0;
+  rawMagneticFluxDensity.y = avgMagnetic.y / 200.0;
+  rawMagneticFluxDensity.z = avgMagnetic.z / 200.0;
 }
 
 double NineAxis::getRawAccelerationX() { return rawAcceleration.x; }
