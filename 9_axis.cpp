@@ -111,6 +111,48 @@ void NineAxis::readMagneticFluxDensity() {
   rawMagneticFluxDensity.z = avgMagnetic.z / 200.0;
 }
 
+double NineAxis::getAzimuth() {
+  double per     = rawMagneticFluxDensity.x / rawMagneticFluxDensity.y;
+  double azimuth = atan(per) * 180.0 / 360.0;
+
+  // 1,2,3,4それぞれで場合わけｘが０のときも
+  //座標軸　yが→　xが↑　で考えている．注意
+  //第１象限
+  if ((rawMagneticFluxDensity.x > 0) && (rawMagneticFluxDensity.y > 0)) {
+    azimuth = azimuth;
+
+  }
+  //  第２象限
+  else if ((rawMagneticFluxDensity.x > 0) && (rawMagneticFluxDensity.y < 0)) {
+    azimuth = azimuth + 180;
+
+  }
+  //　第３象限
+  else if ((rawMagneticFluxDensity.x < 0) && (rawMagneticFluxDensity.y < 0)) {
+    azimuth = 180 + azimuth;
+  }
+  //　第４象限
+  else if ((rawMagneticFluxDensity.x < 0) && (rawMagneticFluxDensity.y > 0)) {
+    azimuth = 360 + azimuth;
+  }
+
+  else if ((rawMagneticFluxDensity.x == 0) && (rawMagneticFluxDensity.y > 0)) {
+    azimuth = 0;
+  } else if ((rawMagneticFluxDensity.x == 0) &&
+             (rawMagneticFluxDensity.y < 0)) {
+    azimuth = 180;
+  }
+
+  else if ((rawMagneticFluxDensity.y == 0) && (rawMagneticFluxDensity.x > 0)) {
+    azimuth = 90;
+  } else if ((rawMagneticFluxDensity.y == 0) &&
+             (rawMagneticFluxDensity.x < 0)) {
+    azimuth = 270;
+  }
+
+  return azimuth;
+}
+
 double NineAxis::getRawAccelerationX() { return rawAcceleration.x; }
 double NineAxis::getRawAccelerationY() { return rawAcceleration.y; }
 double NineAxis::getRawAccelerationZ() { return rawAcceleration.z; }

@@ -38,7 +38,15 @@ class NineAxis {
    * MPU-9250から加速度、角加速度、磁束密度を受信して緯度経度を取得します。
    */
   void   update();
-  
+
+    /**
+   * @brief 方位角算出関数
+   *
+   * 磁束密度データから方位角を算出して出力します。
+   * @return  方位角
+   */
+  double getAzimuth();
+
   double getRawAccelerationX();
   double getRawAccelerationY();
   double getRawAccelerationZ();
@@ -52,6 +60,8 @@ class NineAxis {
  private:
   const byte MPU9250Address; /**< MPU9250のデバイスアドレス */
   const byte MPU9250CompassAddress; /**< 地磁気センサのデバイスアドレス */
+
+
   struct acceleration        rawAcceleration;        /**< 加速度[mG] */
   struct angularAcceleration rawAngularAcceleration; /**< 角加速度[deg/s] */
   struct magneticFluxDensity rawMagneticFluxDensity; /**< 磁束密度[microT] */

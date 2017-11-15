@@ -40,6 +40,11 @@ void loop() {
   Serial.print(nineAxisSensor.getRawMagneticFluxDensityZ());
   Serial.println("");
   Serial.println("==============================");
+
+  Serial.println("Azimuth");
+  Serial.print(nineAxisSensor.getAzimuth());
+  Serial.println("");
+  Serial.println("==============================");
   Serial.println("");
   delay(2000);
 }
