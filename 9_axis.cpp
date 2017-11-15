@@ -18,15 +18,15 @@ NineAxis::NineAxis() : MPU9250Address(0x68), MPU9250CompassAddress(0x0C) {
 
 void NineAxis::begin() {
   Wire.begin();
-  NineAxis::writeRegisterData(MPU9250Address, 0x6B, 0x00);
-  NineAxis::writeRegisterData(MPU9250Address, 0x37, 0x02);
-  NineAxis::writeRegisterData(MPU9250CompassAddress, 0x0A, 0x12);
+  writeRegisterData(MPU9250Address, 0x6B, 0x00);
+  writeRegisterData(MPU9250Address, 0x37, 0x02);
+  writeRegisterData(MPU9250CompassAddress, 0x0A, 0x12);
 }
 
 void NineAxis::update() {
-  NineAxis::readAcceleration();
-  NineAxis::readAngularAcceleration();
-  NineAxis::readMagneticFluxDensity();
+  readAcceleration();
+  readAngularAcceleration();
+  readMagneticFluxDensity();
 }
 
 void NineAxis::writeRegisterData(byte slaveAddress, byte registerAddress,
@@ -51,16 +51,16 @@ void NineAxis::readAcceleration() {
   const double unitConversion = 0.061;
   int          top, bottom;
 
-  top               = NineAxis::readRegisterData(MPU9250Address, 0x3b);
-  bottom            = NineAxis::readRegisterData(MPU9250Address, 0x3c);
+  top               = readRegisterData(MPU9250Address, 0x3b);
+  bottom            = readRegisterData(MPU9250Address, 0x3c);
   rawAcceleration.x = ((top << 8) | bottom) * unitConversion;
 
-  top               = NineAxis::readRegisterData(MPU9250Address, 0x3d);
-  bottom            = NineAxis::readRegisterData(MPU9250Address, 0x3e);
+  top               = readRegisterData(MPU9250Address, 0x3d);
+  bottom            = readRegisterData(MPU9250Address, 0x3e);
   rawAcceleration.y = ((top << 8) | bottom) * unitConversion;
 
-  top               = NineAxis::readRegisterData(MPU9250Address, 0x3f);
-  bottom            = NineAxis::readRegisterData(MPU9250Address, 0x40);
+  top               = readRegisterData(MPU9250Address, 0x3f);
+  bottom            = readRegisterData(MPU9250Address, 0x40);
   rawAcceleration.z = ((top << 8) | bottom) * unitConversion;
 }
 
@@ -68,16 +68,16 @@ void NineAxis::readAngularAcceleration() {
   const double unitConversion = 0.00763;
   int          top, bottom;
 
-  top                      = NineAxis::readRegisterData(MPU9250Address, 0x43);
-  bottom                   = NineAxis::readRegisterData(MPU9250Address, 0x44);
+  top                      = readRegisterData(MPU9250Address, 0x43);
+  bottom                   = readRegisterData(MPU9250Address, 0x44);
   rawAngularAcceleration.x = ((top << 8) | bottom) * unitConversion;
 
-  top                      = NineAxis::readRegisterData(MPU9250Address, 0x45);
-  bottom                   = NineAxis::readRegisterData(MPU9250Address, 0x46);
+  top                      = readRegisterData(MPU9250Address, 0x45);
+  bottom                   = readRegisterData(MPU9250Address, 0x46);
   rawAngularAcceleration.y = ((top << 8) | bottom) * unitConversion;
 
-  top                      = NineAxis::readRegisterData(MPU9250Address, 0x47);
-  bottom                   = NineAxis::readRegisterData(MPU9250Address, 0x48);
+  top                      = readRegisterData(MPU9250Address, 0x47);
+  bottom                   = readRegisterData(MPU9250Address, 0x48);
   rawAngularAcceleration.z = ((top << 8) | bottom) * unitConversion;
 }
 
@@ -88,20 +88,20 @@ void NineAxis::readMagneticFluxDensity() {
   const double offsetY        = -9.9535;
   int          top, bottom;
 
-  bottom = NineAxis::readRegisterData(MPU9250CompassAddress, 0x03);
-  top    = NineAxis::readRegisterData(MPU9250CompassAddress, 0x04);
+  bottom                   = readRegisterData(MPU9250CompassAddress, 0x03);
+  top                      = readRegisterData(MPU9250CompassAddress, 0x04);
   rawMagneticFluxDensity.x = ((top << 8) | bottom) * unitConversion + offsetX;
 
-  bottom = NineAxis::readRegisterData(MPU9250CompassAddress, 0x05);
-  top    = NineAxis::readRegisterData(MPU9250CompassAddress, 0x06);
+  bottom                   = readRegisterData(MPU9250CompassAddress, 0x05);
+  top                      = readRegisterData(MPU9250CompassAddress, 0x06);
   rawMagneticFluxDensity.y = ((top << 8) | bottom) * unitConversion + offsetY;
 
-  bottom = NineAxis::readRegisterData(MPU9250CompassAddress, 0x07);
-  top    = NineAxis::readRegisterData(MPU9250CompassAddress, 0x08);
+  bottom                   = readRegisterData(MPU9250CompassAddress, 0x07);
+  top                      = readRegisterData(MPU9250CompassAddress, 0x08);
   rawMagneticFluxDensity.z = ((top << 8) | bottom) * unitConversion;
 
   // データをリフレッシュするには0x09を読む必要がある
-  NineAxis::readRegisterData(MPU9250CompassAddress, 0x09);
+  readRegisterData(MPU9250CompassAddress, 0x09);
 }
 
 double NineAxis::getRawAccelerationX() { return rawAcceleration.x; }
