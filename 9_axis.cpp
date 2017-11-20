@@ -115,39 +115,34 @@ double NineAxis::getAzimuth() {
   double per     = rawMagneticFluxDensity.x / rawMagneticFluxDensity.y;
   double azimuth = atan(per) * 180.0 / PI;
 
-  // 1,2,3,4それぞれで場合わけｘが０のときも
-  //座標軸　yが→　xが↑　で考えている．注意
-  //第１象限
-  if ((rawMagneticFluxDensity.x > 0) && (rawMagneticFluxDensity.y > 0)) {
-    azimuth = azimuth;
 
-  }
-  //  第２象限
-  else if ((rawMagneticFluxDensity.x > 0) && (rawMagneticFluxDensity.y < 0)) {
-    azimuth = azimuth + 180;
+  // // 1,2,3,4それぞれで場合わけｘが０のときも
+  // //座標軸　yが→　xが↑　で考えている．注意
 
-  }
-  //　第３象限
-  else if ((rawMagneticFluxDensity.x < 0) && (rawMagneticFluxDensity.y < 0)) {
-    azimuth = 180 + azimuth;
-  }
-  //　第４象限
-  else if ((rawMagneticFluxDensity.x < 0) && (rawMagneticFluxDensity.y > 0)) {
-    azimuth = 360 + azimuth;
+  // arctan結果の第1象限以外の処理
+  if ((rawMagneticFluxDensity.x > 0.0) && (rawMagneticFluxDensity.y < 0.0)) {
+    azimuth += 180.0;  // 第2象限
+  } else if ((rawMagneticFluxDensity.x < 0.0) &&
+             (rawMagneticFluxDensity.y < 0.0)) {
+    azimuth += 180.0;  // 第3象限
+  } else if ((rawMagneticFluxDensity.x < 0.0) &&
+             (rawMagneticFluxDensity.y > 0.0)) {
+    azimuth += 360.0;  // 第4象限
   }
 
-  else if ((rawMagneticFluxDensity.x == 0) && (rawMagneticFluxDensity.y > 0)) {
-    azimuth = 0;
-  } else if ((rawMagneticFluxDensity.x == 0) &&
-             (rawMagneticFluxDensity.y < 0)) {
-    azimuth = 180;
-  }
-
-  else if ((rawMagneticFluxDensity.y == 0) && (rawMagneticFluxDensity.x > 0)) {
-    azimuth = 90;
-  } else if ((rawMagneticFluxDensity.y == 0) &&
-             (rawMagneticFluxDensity.x < 0)) {
-    azimuth = 270;
+  // 軸に接する場合の処理
+  if ((fabs(rawMagneticFluxDensity.x) < 0.01) &&
+      (rawMagneticFluxDensity.y > 0.0)) {
+    azimuth = 0.0;
+  } else if ((fabs(rawMagneticFluxDensity.x) < 0.01) &&
+             (rawMagneticFluxDensity.y < 0.0)) {
+    azimuth = 180.0;
+  } else if ((rawMagneticFluxDensity.x > 0.0) &&
+             (fabs(rawMagneticFluxDensity.y) < 0.01)) {
+    azimuth = 90.0;
+  } else if ((rawMagneticFluxDensity.x < 0.0) &&
+             (fabs(rawMagneticFluxDensity.y) < 0.01)) {
+    azimuth = 270.0;
   }
 
   return azimuth;
