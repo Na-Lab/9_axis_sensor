@@ -113,7 +113,7 @@ void NineAxis::readMagneticFluxDensity() {
 
 double NineAxis::getAzimuth() {
   double per     = rawMagneticFluxDensity.x / rawMagneticFluxDensity.y;
-  double azimuth = atan(per) * 180.0 / 360.0;
+  double azimuth = atan(per) * 180.0 / PI;
 
   // 1,2,3,4それぞれで場合わけｘが０のときも
   //座標軸　yが→　xが↑　で考えている．注意
