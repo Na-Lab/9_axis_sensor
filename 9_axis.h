@@ -58,12 +58,14 @@ class NineAxis {
   double getRawMagZ();
 
  private:
-  const byte MPU9250Address; /**< MPU9250のデバイスアドレス */
+  const byte MPU9250Address;        /**< MPU9250のデバイスアドレス */
   const byte MPU9250CompassAddress; /**< 地磁気センサのデバイスアドレス */
 
-  struct accel rawAccel; /**< 加速度[mG] */
-  struct gyro  rawGyro;  /**< 角加速度[deg/s] */
-  struct mag   rawMag;   /**< 磁束密度[microT] */
+  double magCalibration[3];         /**< 地磁気センサの感度調整値 */
+
+  struct accel rawAccel;            /**< 加速度[mG] */
+  struct gyro  rawGyro;             /**< 角加速度[deg/s] */
+  struct mag   rawMag;              /**< 磁束密度[microT] */
 
   /**
    * @brief レジスタデータ書き込み関数
