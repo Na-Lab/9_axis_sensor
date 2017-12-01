@@ -13,31 +13,31 @@ void loop() {
   nineAxisSensor.update();
   Serial.println("Acceleration");
   Serial.print("X = ");
-  Serial.print(nineAxisSensor.getRawAccelerationX());
+  Serial.print(nineAxisSensor.getRawAccelX());
   Serial.print(", Y = ");
-  Serial.print(nineAxisSensor.getRawAccelerationY());
+  Serial.print(nineAxisSensor.getRawAccelY());
   Serial.print(", Z = ");
-  Serial.print(nineAxisSensor.getRawAccelerationZ());
+  Serial.print(nineAxisSensor.getRawAccelZ());
   Serial.println("");
   Serial.println("==============================");
 
   Serial.println("Gyro");
   Serial.print("X = ");
-  Serial.print(nineAxisSensor.getRawAngularAccelerationX());
+  Serial.print(nineAxisSensor.getRawGyroX());
   Serial.print(", Y = ");
-  Serial.print(nineAxisSensor.getRawAngularAccelerationY());
+  Serial.print(nineAxisSensor.getRawGyroY());
   Serial.print(", Z = ");
-  Serial.print(nineAxisSensor.getRawAngularAccelerationZ());
+  Serial.print(nineAxisSensor.getRawGyroZ());
   Serial.println("");
   Serial.println("==============================");
 
   Serial.println("Geomagnetism");
   Serial.print("X = ");
-  Serial.print(nineAxisSensor.getRawMagneticFluxDensityX());
+  Serial.print(nineAxisSensor.getRawMagX());
   Serial.print(", Y = ");
-  Serial.print(nineAxisSensor.getRawMagneticFluxDensityY());
+  Serial.print(nineAxisSensor.getRawMagY());
   Serial.print(", Z = ");
-  Serial.print(nineAxisSensor.getRawMagneticFluxDensityZ());
+  Serial.print(nineAxisSensor.getRawMagZ());
   Serial.println("");
   Serial.println("==============================");
 
