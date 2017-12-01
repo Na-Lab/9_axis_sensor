@@ -46,6 +46,19 @@ byte NineAxis::readByte(byte slaveAddress, byte registerAddress) {
   return (Wire.read());
 }
 
+void NineAxis::readBytes(byte slaveAddress, byte registerAddress, byte count,
+                         byte *data) {
+  Wire.beginTransmission(slaveAddress);
+  Wire.write(registerAddress);
+  Wire.endTransmission(false);
+  uint8_t i = 0;
+  Wire.requestFrom(slaveAddress, count);
+  while (Wire.available()) {
+    data[i] = Wire.read();
+    i++;
+  }
+}
+
 void NineAxis::readAccelData() {
   const double unitConversion = 0.061;
   int          top, bottom;

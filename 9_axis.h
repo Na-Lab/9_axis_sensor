@@ -85,6 +85,18 @@ class NineAxis {
    */
   byte readByte(byte slaveAddress, byte registerAddress);
 
+    /**
+   * @brief 連続レジスタデータ読み取り関数
+   *
+   * MPU-9250内のレジスタからデータをcountバイト読み取ります。
+   * @param[in] slaveAddress    通信対象アドレス
+   * @param[in] registerAddress 読み取りレジスタアドレス
+   * @param[in] count           読み取りバイト数
+   * @param[in] data            受信データ列
+   */
+  void readBytes(byte slaveAddress, byte registerAddress, byte count,
+                 byte *data);
+
   /**
    * @brief 加速度読み取り関数
    *
