@@ -17,28 +17,31 @@ NineAxis::NineAxis() : MPU9250Address(0x68), MPU9250CompassAddress(0x0C) {
 }
 
 void NineAxis::begin() {
-  const byte PWR_MGMT_1  = 0x6B;  // パワーマネジメントレジスタ1
+  const byte PWR_MGMT_1 = 0x6B;  // パワーマネジメントレジスタ1
   const byte INT_PIN_CFG = 0x37;  // 割り込みピンコンフィギュレーションレジスタ
 
   const byte AK8963_CNTL = 0x0A;  // コントロールレジスタ1
   const byte AK8963_ASAX = 0x10;  // 感度調整レジスタ
 
   Wire.begin();
-  writeByte(MPU9250Address, PWR_MGMT_1, 0x00);          // スリープモードをクリア
+  writeByte(MPU9250Address, PWR_MGMT_1, 0x00);  // スリープモードをクリア
   delay(10);
-  writeByte(MPU9250Address, INT_PIN_CFG, 0x02);         // バイパスモードをセット
+  writeByte(MPU9250Address, INT_PIN_CFG, 0x02);  // バイパスモードをセット
   delay(10);
 
-  writeByte(MPU9250CompassAddress, AK8963_CNTL, 0x00);  // 地磁気センサをリセット
+  writeByte(MPU9250CompassAddress, AK8963_CNTL,
+            0x00);  // 地磁気センサをリセット
   delay(10);
-  writeByte(MPU9250CompassAddress, AK8963_CNTL, 0x0F);  // ROMアクセスモードに変更
+  writeByte(MPU9250CompassAddress, AK8963_CNTL,
+            0x0F);  // ROMアクセスモードに変更
   delay(10);
   byte tempData[3] = {0, 0, 0};
   readBytes(MPU9250CompassAddress, AK8963_ASAX, 3, tempData);
-  magCalibration[0] = (double)(tempData[0] - 128)/256. + 1.;
-  magCalibration[1] = (double)(tempData[1] - 128)/256. + 1.;
-  magCalibration[2] = (double)(tempData[2] - 128)/256. + 1.;
-  writeByte(MPU9250CompassAddress, AK8963_CNTL, 0x00);  // パワーダウンモードに戻す
+  magCalibration[0] = (double)(tempData[0] - 128) / 256. + 1.;
+  magCalibration[1] = (double)(tempData[1] - 128) / 256. + 1.;
+  magCalibration[2] = (double)(tempData[2] - 128) / 256. + 1.;
+  writeByte(MPU9250CompassAddress, AK8963_CNTL,
+            0x00);  // パワーダウンモードに戻す
   delay(10);
   writeByte(MPU9250CompassAddress, AK8963_CNTL, 0x12);  // 連続測定モード1に変更
   delay(10);
@@ -81,68 +84,44 @@ void NineAxis::readBytes(byte slaveAddress, byte registerAddress, byte count,
 }
 
 void NineAxis::readAccelData() {
-  const double unitConversion = 0.061;
-  int          top, bottom;
+  const double unitConversion = 0.061;  /**< 単位換算値 */
+  byte         rawData[6]     = {0};    /**< 生データ */
 
-  top        = readByte(MPU9250Address, 0x3b);
-  bottom     = readByte(MPU9250Address, 0x3c);
-  rawAccel.x = ((top << 8) | bottom) * unitConversion;
-
-  top        = readByte(MPU9250Address, 0x3d);
-  bottom     = readByte(MPU9250Address, 0x3e);
-  rawAccel.y = ((top << 8) | bottom) * unitConversion;
-
-  top        = readByte(MPU9250Address, 0x3f);
-  bottom     = readByte(MPU9250Address, 0x40);
-  rawAccel.z = ((top << 8) | bottom) * unitConversion;
+  readBytes(MPU9250Address, 0x3b, 6, rawData);
+  rawAccel.x = ((rawData[0] << 8) | rawData[1]) * unitConversion;
+  rawAccel.y = ((rawData[2] << 8) | rawData[3]) * unitConversion;
+  rawAccel.z = ((rawData[4] << 8) | rawData[5]) * unitConversion;
 }
 
 void NineAxis::readGyroData() {
-  const double unitConversion = 0.00763;
-  int          top, bottom;
+  const double unitConversion = 0.00763;        /**< 単位換算値 */
+  byte         rawData[6]     = {0};            /**< 生データ */
 
-  top       = readByte(MPU9250Address, 0x43);
-  bottom    = readByte(MPU9250Address, 0x44);
-  rawGyro.x = ((top << 8) | bottom) * unitConversion;
-
-  top       = readByte(MPU9250Address, 0x45);
-  bottom    = readByte(MPU9250Address, 0x46);
-  rawGyro.y = ((top << 8) | bottom) * unitConversion;
-
-  top       = readByte(MPU9250Address, 0x47);
-  bottom    = readByte(MPU9250Address, 0x48);
-  rawGyro.z = ((top << 8) | bottom) * unitConversion;
+  readBytes(MPU9250Address, 0x43, 6, rawData);
+  rawGyro.x = ((rawData[0] << 8) | rawData[1]) * unitConversion;
+  rawGyro.y = ((rawData[2] << 8) | rawData[3]) * unitConversion;
+  rawGyro.z = ((rawData[4] << 8) | rawData[5]) * unitConversion;
 }
 
-// 注意：リトルエンディアン
 void NineAxis::readMagData() {
-  const double unitConversion = 0.15;     /**< 単位換算値 */
-  const double offsetX        = -39.588;  /**< X軸オフセット */
-  const double offsetY        = -9.9535;  /**< Y軸オフセット */
-  const double offsetZ        = 0.0;      /**< Z軸オフセット */
-  struct mag   avgMag    = {0.0};
-  int          top, bottom;
+  const double unitConversion = 0.15;    /**< 単位換算値 */
+  const double offsetX        = -39.588; /**< X軸オフセット */
+  const double offsetY        = -9.9535; /**< Y軸オフセット */
+  const double offsetZ        = 0.0;     /**< Z軸オフセット */
+  byte         rawData[6]     = {0};     /**< 生データ */
 
-  for (int i = 0; i < 10; i++) {
-    bottom = readByte(MPU9250CompassAddress, 0x03);
-    top    = readByte(MPU9250CompassAddress, 0x04);
-    avgMag.x += ((top << 8) | bottom)*unitConversion*magCalibration[0] + offsetX;
-
-    bottom = readByte(MPU9250CompassAddress, 0x05);
-    top    = readByte(MPU9250CompassAddress, 0x06);
-    avgMag.y += ((top << 8) | bottom)*unitConversion*magCalibration[1] + offsetY;
-
-    bottom = readByte(MPU9250CompassAddress, 0x07);
-    top    = readByte(MPU9250CompassAddress, 0x08);
-    avgMag.z += ((top << 8) | bottom)*unitConversion*magCalibration[2] + offsetZ;
-
-    // データをリフレッシュするには0x09を読む必要がある
-    readByte(MPU9250CompassAddress, 0x09);
-  }
-
-  rawMag.x = avgMag.x / 10.0;
-  rawMag.y = avgMag.y / 10.0;
-  rawMag.z = avgMag.z / 10.0;
+  readBytes(MPU9250CompassAddress, 0x03, 6, rawData);
+  // 注意：リトルエンディアン
+  rawMag.x =
+      ((rawData[1] << 8) | rawData[0]) * unitConversion * magCalibration[0] +
+      offsetX;
+  rawMag.y =
+      ((rawData[3] << 8) | rawData[2]) * unitConversion * magCalibration[1] +
+      offsetY;
+  rawMag.z =
+      ((rawData[5] << 8) | rawData[4]) * unitConversion * magCalibration[2] +
+      offsetZ;
+  readByte(MPU9250CompassAddress, 0x09);
 }
 
 double NineAxis::getAzimuth() {
